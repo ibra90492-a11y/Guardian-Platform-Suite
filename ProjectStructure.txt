@@ -1,0 +1,18 @@
+Guardian-Platform-Suite/
+├── assets/
+├── backend/
+├── docs/
+├── frontend/
+├── logs/
+├── reports/
+├── WiFi-Guardian-Toolkit/
+│   ├── core/
+│   ├── ui/
+│   ├── utils/
+│   ├── windows/
+│   └── WiFi-Guardian-Toolkit/
+├── desktop_app.py
+├── main.py
+├── run.py
+├── run_desktop.py
+└── README.md
