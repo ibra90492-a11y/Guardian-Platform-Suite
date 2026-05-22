@@ -25,6 +25,10 @@ WiFi-Guardian-Toolkit/reports/
 WiFi-Guardian-Toolkit/WiFi-Guardian-Toolkit/security_report.html
 
 # Local credentials, codes, and hashes must not be published to a public repo
+*Token*.txt
+*token*.txt
+*Personal Access Token*.txt
+github_pat*.txt
 WiFi-Guardian-Toolkit/kali_account.txt
 WiFi-Guardian-Toolkit/security_code.txt
 WiFi-Guardian-Toolkit/*hash.txt
