@@ -25,12 +25,14 @@ from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
     QDialog,
+    QFileDialog,
     QFrame,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QMainWindow,
     QMessageBox,
+    QProgressBar,
     QPushButton,
     QPlainTextEdit,
     QSplitter,
@@ -43,6 +45,12 @@ import run
 
 
 ROOT = Path(__file__).resolve().parent
+WIFI_TOOLKIT_ROOT = ROOT / "WiFi-Guardian-Toolkit"
+if str(WIFI_TOOLKIT_ROOT) not in sys.path:
+    sys.path.insert(0, str(WIFI_TOOLKIT_ROOT))
+
+from github_uploader import load_github_token, open_report_pdf, upload_folder_to_github
+
 APP_TITLE = "Guardian Cyber Assessment Platform"
 SCAN_TIMER_INTERVAL_MS = 180
 REPORT_FINAL_WAIT_SECONDS = 5
@@ -131,6 +139,18 @@ QPushButton#DarkButton {
 QPushButton#DangerButton {
     background: #b42318;
     border-color: #b42318;
+    color: #ffffff;
+}
+QPushButton#GitHubButton {
+    min-height: 44px;
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+    font-weight: 800;
+}
+QPushButton#GitHubButton:hover {
+    background: #15803d;
+    border-color: #15803d;
     color: #ffffff;
 }
 QPushButton#MegaButton {
@@ -249,6 +269,18 @@ QPushButton#DangerButton:hover,
 QPushButton#MegaButton:hover {
     background: #071407;
 }
+QPushButton#GitHubButton {
+    min-height: 44px;
+    background: #16a34a;
+    border: 1px solid #16a34a;
+    color: #ffffff;
+    font-weight: 900;
+}
+QPushButton#GitHubButton:hover {
+    background: #15803d;
+    border-color: #15803d;
+    color: #ffffff;
+}
 QPlainTextEdit {
     background: #000000;
     color: #00ff41;
@@ -316,6 +348,9 @@ class GuardianDesktop(QMainWindow):
     action_failed = Signal(tuple)
     full_scan_finished = Signal(object)
     full_scan_failed = Signal(str)
+    github_upload_progress = Signal(tuple)
+    github_upload_finished = Signal(object)
+    github_upload_failed = Signal(str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -339,6 +374,9 @@ class GuardianDesktop(QMainWindow):
         self.action_failed.connect(self._show_action_error)
         self.full_scan_finished.connect(self._finish_full_scan_worker)
         self.full_scan_failed.connect(self._fail_full_scan_worker)
+        self.github_upload_progress.connect(self._update_github_upload_progress)
+        self.github_upload_finished.connect(self._finish_github_upload)
+        self.github_upload_failed.connect(self._fail_github_upload)
 
         self._build_ui()
         self._set_status("جاري تشغيل الخدمات...", state="pending")
@@ -412,6 +450,11 @@ class GuardianDesktop(QMainWindow):
         self.clear_history_btn.clicked.connect(self.clear_history)
         extra_row.addWidget(self.clear_history_btn)
         layout.addLayout(extra_row)
+
+        self.github_upload_btn = QPushButton("Uploading and updating to GitHub\nالرفع والتحديث الى GitHub")
+        self.github_upload_btn.setObjectName("GitHubButton")
+        self.github_upload_btn.clicked.connect(self.open_github_upload_flow)
+        layout.addWidget(self.github_upload_btn)
 
         layout.addStretch(1)
 
@@ -964,6 +1007,169 @@ class GuardianDesktop(QMainWindow):
             self._append_log("تم فتح WiFi Guardian Toolkit في نافذة مستقلة.")
         except Exception as exc:
             self._show_hacker_message("WiFi Toolkit", f"تعذر تشغيل واجهة WiFi:\n{exc}")
+
+    def open_github_upload_flow(self) -> None:
+        desktop_path = Path.home() / "Desktop"
+        selected_folder = QFileDialog.getExistingDirectory(
+            self,
+            "اختر مجلد المشروع من سطح المكتب للرفع والتحديث إلى GitHub",
+            str(desktop_path if desktop_path.exists() else ROOT),
+        )
+        if not selected_folder:
+            return
+
+        env_path = ROOT / ".env"
+        expected_token = load_github_token(env_path)
+        if not expected_token:
+            self._show_hacker_message(
+                "GitHub Token",
+                "لم أجد GITHUB_TOKEN داخل ملف .env في مجلد المشروع الأساسي.\n\n"
+                f"المسار المتوقع:\n{env_path}\n\n"
+                "اكتب السطر بهذا الشكل:\nGITHUB_TOKEN=your_token_here",
+            )
+            return
+
+        entered_token = self._ask_github_token()
+        if not entered_token:
+            return
+
+        if entered_token != expected_token:
+            self._show_hacker_message(
+                "GitHub Token",
+                "رقم التوكن غير مطابق للقيمة الموجودة بعد GITHUB_TOKEN= داخل ملف .env.",
+            )
+            return
+
+        self._start_github_upload(Path(selected_folder), entered_token, env_path)
+
+    def _ask_github_token(self) -> str:
+        dialog = QDialog(self)
+        dialog.setWindowTitle("GitHub Token")
+        dialog.setModal(True)
+        dialog.resize(560, 220)
+
+        layout = QVBoxLayout(dialog)
+        layout.setContentsMargins(18, 18, 18, 18)
+        layout.setSpacing(12)
+
+        title = QLabel("أدخل رقم التوكن للاستمرار في عملية الرفع والتحديث")
+        title.setObjectName("SectionTitle")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setWordWrap(True)
+        layout.addWidget(title)
+
+        note = QLabel("سيتم التحقق منه من السطر GITHUB_TOKEN= داخل ملف .env")
+        note.setObjectName("Subtitle")
+        note.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        note.setWordWrap(True)
+        layout.addWidget(note)
+
+        token_input = QLineEdit()
+        token_input.setEchoMode(QLineEdit.EchoMode.Password)
+        token_input.setPlaceholderText("Paste GitHub token here / الصق رقم التوكن هنا")
+        token_input.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        token_input.setClearButtonEnabled(True)
+        token_input.setContextMenuPolicy(Qt.ContextMenuPolicy.DefaultContextMenu)
+        layout.addWidget(token_input)
+
+        button_row = QHBoxLayout()
+        paste_btn = QPushButton("Paste / لصق")
+        paste_btn.clicked.connect(token_input.paste)
+        button_row.addWidget(paste_btn)
+
+        continue_btn = QPushButton("متابعة")
+        continue_btn.setObjectName("GitHubButton")
+        continue_btn.clicked.connect(dialog.accept)
+        button_row.addWidget(continue_btn)
+
+        cancel_btn = QPushButton("إلغاء")
+        cancel_btn.setObjectName("DangerButton")
+        cancel_btn.clicked.connect(dialog.reject)
+        button_row.addWidget(cancel_btn)
+        layout.addLayout(button_row)
+
+        token_input.returnPressed.connect(dialog.accept)
+        token_input.setFocus()
+
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return ""
+        return token_input.text().strip()
+
+    def _start_github_upload(self, selected_folder: Path, token: str, env_path: Path) -> None:
+        self.github_upload_btn.setEnabled(False)
+
+        dialog = QDialog(self)
+        dialog.setWindowTitle("GitHub Upload")
+        dialog.setModal(True)
+        dialog.resize(620, 190)
+
+        layout = QVBoxLayout(dialog)
+        layout.setContentsMargins(18, 18, 18, 18)
+        layout.setSpacing(12)
+
+        title = QLabel("جاري رفع وتحديث ملفات مستودع GitHub")
+        title.setObjectName("SectionTitle")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(title)
+
+        self.github_upload_detail_label = QLabel("بدء العملية...")
+        self.github_upload_detail_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.github_upload_detail_label.setWordWrap(True)
+        layout.addWidget(self.github_upload_detail_label)
+
+        self.github_upload_progress_bar = QProgressBar()
+        self.github_upload_progress_bar.setRange(0, 100)
+        self.github_upload_progress_bar.setValue(0)
+        self.github_upload_progress_bar.setFormat("%p%")
+        layout.addWidget(self.github_upload_progress_bar)
+
+        self.github_upload_dialog = dialog
+        dialog.show()
+
+        def progress(percent: int, message: str) -> None:
+            self.github_upload_progress.emit((percent, message))
+
+        def worker() -> None:
+            try:
+                summary = upload_folder_to_github(selected_folder, token, env_path, progress)
+            except Exception as exc:
+                self.github_upload_failed.emit(str(exc))
+                return
+            self.github_upload_finished.emit(summary)
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    def _update_github_upload_progress(self, payload: tuple) -> None:
+        percent, message = payload
+        if hasattr(self, "github_upload_progress_bar"):
+            self.github_upload_progress_bar.setValue(int(percent))
+        if hasattr(self, "github_upload_detail_label"):
+            self.github_upload_detail_label.setText(str(message))
+
+    def _finish_github_upload(self, summary: object) -> None:
+        self.github_upload_btn.setEnabled(True)
+        if hasattr(self, "github_upload_dialog") and self.github_upload_dialog is not None:
+            self.github_upload_dialog.accept()
+
+        QMessageBox.information(
+            self,
+            "GitHub Upload",
+            "تم الرفع والتحديث بنجاح.\n\n"
+            f"عدد ملفات المجلد: {summary.project_file_count}\n"
+            f"ملفات جديدة: {summary.new_files_count}\n"
+            f"ملفات محدثة: {summary.updated_files_count}\n"
+            f"ملف التقرير:\n{summary.report_path}",
+        )
+        try:
+            open_report_pdf(summary.report_path)
+        except Exception as exc:
+            self._show_hacker_message("PDF Report", f"تم إنشاء التقرير لكن تعذر فتحه تلقائياً:\n{exc}")
+
+    def _fail_github_upload(self, error: str) -> None:
+        self.github_upload_btn.setEnabled(True)
+        if hasattr(self, "github_upload_dialog") and self.github_upload_dialog is not None:
+            self.github_upload_dialog.reject()
+        self._show_hacker_message("GitHub Upload", f"فشلت عملية الرفع والتحديث:\n\n{error}")
 
     def _target(self) -> str:
         return self.target_input.text().strip()

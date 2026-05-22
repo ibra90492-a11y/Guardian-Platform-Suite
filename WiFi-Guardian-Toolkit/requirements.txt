@@ -3,3 +3,4 @@ matplotlib
 dnspython
 httpx
 pyautogui
+reportlab

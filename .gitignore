@@ -51,6 +51,7 @@ sync_watchlist.json
 .sync_state.json
 reports/output/*
 !reports/output/.gitkeep
+reports/github_upload/
 
 # Local shortcuts and generated runtime data
 *.lnk

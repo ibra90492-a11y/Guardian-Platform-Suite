@@ -1,0 +1,23 @@
+# 📘 تعليمات نظام الربط الحي مع GitHub
+
+## 🚀 كيفية الإعداد:
+
+### الخطوة 1: تثبيت الملفات
+1. ضع الملفات الثلاثة في مستودعك:
+   - `live_sync.py`
+   - `sync_config.json`
+   - `sync_instructions.txt`
+
+2. قم بتعديل `sync_config.json`:
+   - `local_path`: المسار المحلي للمستودع
+   - `github_token`: token GitHub الخاص بك (اختياري)
+
+### الخطوة 2: الحصول على GitHub Token
+1. اذهب إلى GitHub → Settings → Developer settings → Personal access tokens
+2. أنشئ token جديد مع صلاحيات:
+   - `repo` (للتحكم بالمستودعات)
+   - `read:user` (لقراءة المعلومات)
+
+### الخطوة 3: تشغيل النظام
+```bash
+python live_sync.py
