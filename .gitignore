@@ -1,17 +1,54 @@
 .venv/
 **/.venv/
+venv/
+env/
+ENV/
+
 frontend/node_modules/
 **/node_modules/
+node_modules/
 frontend/dist/
 **/dist/
+dist/
+build/
+
 .tools/
 __pycache__/
 **/__pycache__/
 **/.pytest_cache/
 *.pyc
+*.pyo
+*.pyd
+*$py.class
+*.so
+*.egg
+*.egg-info/
+
+# ملفات البيئة والأسرار
 .env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.crt
+*.cert
+token.enc
+secrets.json
+*Token*.txt
+*token*.txt
+*Personal Access Token*.txt
+github_pat*.txt
+
+# ملفات التسجيل والتقارير المحلية
 logs/
 *.log
+debug.log
+sync_log.txt
+sync_report.md
+sync_notifications.json
+sync_watchlist.json
+.sync_state.json
 reports/output/*
 !reports/output/.gitkeep
 
@@ -24,11 +61,13 @@ WiFi-Guardian-Toolkit/audit_timeline.jsonl
 WiFi-Guardian-Toolkit/reports/
 WiFi-Guardian-Toolkit/WiFi-Guardian-Toolkit/security_report.html
 
-# Local credentials, codes, and hashes must not be published to a public repo
-*Token*.txt
-*token*.txt
-*Personal Access Token*.txt
-github_pat*.txt
+# Local credentials, codes, and hashes must not be published
 WiFi-Guardian-Toolkit/kali_account.txt
 WiFi-Guardian-Toolkit/security_code.txt
 WiFi-Guardian-Toolkit/*hash.txt
+
+# ملفات مؤقتة
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db

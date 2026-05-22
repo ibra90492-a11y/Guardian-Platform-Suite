@@ -1,0 +1,65 @@
+{
+    "repo_url": "https://github.com/ibra90492-a11y/Guardian-Platform-Suite",
+    "local_path": "${LOCAL_PATH}",
+    "github_token": "${GITHUB_TOKEN}",
+    "branch": "",
+    "sync_settings": {
+        "interval": 30,
+        "auto_push": false,
+        "auto_pull": false,
+        "notify_methods": [
+            "log",
+            "console"
+        ],
+        "max_file_size": 1000000,
+        "tracked_patterns": [
+            "*.py",
+            "*.pyw",
+            "*.json",
+            "*.txt",
+            "*.md",
+            "*.yml",
+            "*.yaml",
+            "*.html",
+            "*.css",
+            "*.js",
+            "*.toml",
+            "*.ini",
+            "*.bat",
+            "requirements.txt",
+            "pyproject.toml",
+            "Pipfile",
+            "Pipfile.lock",
+            ".gitignore"
+        ],
+        "excluded_patterns": [
+            "__pycache__/*",
+            ".git/*",
+            "*.log",
+            "*.tmp",
+            "*.bak",
+            "node_modules/*",
+            "venv/*",
+            ".venv/*",
+            "env/*",
+            ".env",
+            ".env.*",
+            "sync_log.txt",
+            "sync_report.md",
+            "sync_notifications.json",
+            "sync_watchlist.json"
+        ]
+    },
+    "ai": {
+        "enabled": true,
+        "api_key": "${OPENAI_API_KEY}",
+        "model": "${OPENAI_MODEL}"
+    },
+    "auto_actions": {
+        "on_add": "alert_only",
+        "on_modify": "alert_only",
+        "on_delete": "alert_only",
+        "on_conflict": "alert_only"
+    },
+    "commit_message_template": "[Auto-Sync] {action} {files_count} files at {timestamp}"
+}
