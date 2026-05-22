@@ -1,0 +1,72 @@
+========================================================
+        LEGAL & ETHICAL USE AGREEMENT
+========================================================
+
+Project Name:
+Cyber Security Educational Toolkit
+
+Owner:
+عبدالله أحمد علي ابراهيم
+
+Purpose:
+This project is created for educational, defensive,
+and authorized security testing purposes only.
+
+========================================================
+AUTHORIZED USE ONLY
+========================================================
+
+The owner and user of this project agrees that:
+
+1. All tools, scripts, and commands included in this
+   project will ONLY be used on:
+
+   - Personal devices
+   - Personal laboratory environments
+   - Authorized networks
+   - Systems with explicit written permission
+
+2. Unauthorized access, password attacks, surveillance,
+   interception, or misuse against third-party systems
+   is strictly prohibited.
+
+3. The user accepts full legal responsibility for any
+   misuse, illegal activity, or violation of local or
+   international cybersecurity laws.
+
+4. This toolkit is intended for:
+   - Security education
+   - Defensive testing
+   - Network auditing
+   - Learning ethical hacking concepts
+   - Cybersecurity research in legal environments
+
+========================================================
+DISCLAIMER
+========================================================
+
+The creator, contributors, and distributors of this
+project are NOT responsible for:
+
+- Illegal usage
+- Unauthorized access attempts
+- Damage to systems or networks
+- Data loss
+- Violation of laws or regulations
+
+Use this project responsibly and ethically.
+
+========================================================
+ACKNOWLEDGEMENT
+========================================================
+
+By using this project, the user confirms that they
+understand and agree to all terms stated above.
+
+Signed:
+عبدالله أحمد علي ابراهيم
+
+Date:
+2026
+
+========================================================

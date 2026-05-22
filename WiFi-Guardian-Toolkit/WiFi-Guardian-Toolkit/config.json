@@ -1,0 +1,89 @@
+{
+    "toolkit": {
+        "name": "WiFi Guardian Toolkit",
+        "version": "1.0.0",
+        "description": "نظام شامل لحماية وحماية شبكات WiFi",
+        "author": "WiFi Guardian Team",
+        "license": "MIT"
+    },
+    "email": {
+        "recipient": "ibra90492@gmail.com",
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "use_ssl": true,
+        "sender_email": "your-email@gmail.com",
+        "sender_password": "your-app-password"
+    },
+    "scan": {
+        "check_tools": true,
+        "detect_devices": true,
+        "detect_os": true,
+        "scan_ports": true,
+        "analyze_wifi": true
+    },
+    "report": {
+        "format": "html",
+        "include_images": true,
+        "color_theme": "modern",
+        "include_recommendations": true,
+        "language": "ar"
+    },
+    "pdf": {
+        "format": "A4",
+        "orientation": "portrait",
+        "margin_top": 20,
+        "margin_bottom": 20,
+        "margin_left": 15,
+        "margin_right": 15
+    },
+    "schedule": {
+        "enable_schedule": false,
+        "frequency": "monthly",
+        "day": 1,
+        "time": "09:00"
+    },
+    "notifications": {
+        "enable_email": true,
+        "enable_toast": true,
+        "enable_log": true
+    },
+    "security": {
+        "recommendations": [
+            {
+                "id": 1,
+                "title": "تغيير كلمة المرور",
+                "description": "استخدم كلمة مرور قوية (16+ حرف)",
+                "priority": "high",
+                "icon": "🔐"
+            },
+            {
+                "id": 2,
+                "title": "تحديث البرنامج",
+                "description": "حافظ على تحديث برنامج الراوتر",
+                "priority": "high",
+                "icon": "🔄"
+            },
+            {
+                "id": 3,
+                "title": "تفعيل WPA2/WPA3",
+                "description": "استخدم التشفير الحديث فقط",
+                "priority": "high",
+                "icon": "🛡️"
+            },
+            {
+                "id": 4,
+                "title": "تعطيل WPS",
+                "description": "WPS يحتوي على ثغرات أمنية",
+                "priority": "high",
+                "icon": "❌"
+            },
+            {
+                "id": 5,
+                "title": "تغيير اسم الشبكة",
+                "description": "لا تستخدم SSID افتراضي",
+                "priority": "medium",
+                "icon": "📡"
+            }
+        ]
+    }
+}

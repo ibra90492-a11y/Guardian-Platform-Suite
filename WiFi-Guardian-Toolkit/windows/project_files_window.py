@@ -1,0 +1,2 @@
+"""Project Files window placeholder."""
+

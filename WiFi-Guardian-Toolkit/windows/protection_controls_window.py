@@ -1,0 +1,2 @@
+"""Protection Controls window placeholder."""
+

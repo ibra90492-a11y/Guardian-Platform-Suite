@@ -1,0 +1,2 @@
+"""Email sender window placeholder."""
+

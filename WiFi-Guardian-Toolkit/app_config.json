@@ -1,0 +1,10 @@
+{
+  "provider": "cloudflare",
+  "refresh_interval_seconds": 20,
+  "diagnostics_timeout_seconds": 6,
+  "strict_security": true,
+  "operation_mode": "defensive",
+  "reports_dir": "reports",
+  "audit_tail_size": 20,
+  "auto_reset_dns_on_start": true
+}
